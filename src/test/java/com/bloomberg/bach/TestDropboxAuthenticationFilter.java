@@ -61,7 +61,7 @@ public class TestDropboxAuthenticationFilter {
     };
     String allowRule = "*,*,/";
     log.trace("Passing configs:\n{}", allowRule);
-    configs.put("dropbox.allow.rule", allowRule);
+    configs.put("dropbox.allow.rules", allowRule);
     configs.put(AuthenticationFilter.AUTH_TYPE, "simple");
     FilterConfig fc = new DummyFilterConfig(configs);
 
@@ -137,7 +137,7 @@ public class TestDropboxAuthenticationFilter {
     };
     String allowRule = "ubuntu,127.0.0.1/32,/localbits/*|ubuntu,192.168.0.1/22,/user/ubuntu/*";
     log.trace("Passing configs:\n{}", allowRule);
-    configs.put("dropbox.allow.rule", allowRule);
+    configs.put("dropbox.allow.rules", allowRule);
     configs.put(AuthenticationFilter.AUTH_TYPE, "simple");
     FilterConfig fc = new DummyFilterConfig(configs);
 

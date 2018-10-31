@@ -30,7 +30,7 @@ public class DropboxAuthenticationFilter implements Filter {
   private Logger LOG = LoggerFactory.getLogger(DropboxAuthenticationFilter.class);
   public static final String WEBHDFS_ROOT = "/webhdfs/v1";
   public static final String HDFS_CONFIG_PREFIX = "dfs.web.authentication.";
-  public static final String DROPBOX_CONFIG = "dropbox.allow.rule";
+  public static final String DROPBOX_CONFIG = "dropbox.allow.rules";
   private HashMap<String, ArrayList<Rule>> RULEMAP = null;
 
   private class Rule {
@@ -158,13 +158,13 @@ public class DropboxAuthenticationFilter implements Filter {
 
   @Override
   public void init(FilterConfig config) throws ServletException {
-    HashMap overrideConfigs = new HashMap<String, String>();
+    HashMap<String, String> overrideConfigs = new HashMap<String, String>();
 
     // Process dropbox rules
     String dropboxRules = config.getInitParameter(DROPBOX_CONFIG);
     if(dropboxRules != null) {
-      // name: dropbox.allow.rule
-      // value: user,network/bits,path glob|
+      // name: dropbox.allow.rules
+      // value: user1,network/bits1,path_glob1|user2,network/bints2,path_glob2...
       String[] rules = dropboxRules.split("\\||\n");
       RULEMAP = new HashMap<String, ArrayList<Rule>>(rules.length);
       for(String line : rules) {
@@ -173,14 +173,13 @@ public class DropboxAuthenticationFilter implements Filter {
         String globPattern = parts[2];
         // Map is {"user": [subnet, path]}
         Rule rule = null;
-        if(parts[1].equals("*")) {
+        if(parts[1].trim().equals("*")) {
           rule = new Rule(null, globPattern);
         } else {
           rule = new Rule(new SubnetUtils(parts[1]).getInfo(), globPattern);
         }
         // Update the rule map with this rule
-        ArrayList<Rule> ruleList = RULEMAP.getOrDefault(parts[0], new ArrayList<Rule>() {
-        });
+        ArrayList<Rule> ruleList = RULEMAP.getOrDefault(parts[0], new ArrayList<Rule>() {});
         ruleList.add(rule);
         RULEMAP.put(parts[0], ruleList);
       }
