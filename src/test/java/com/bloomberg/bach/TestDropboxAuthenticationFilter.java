@@ -43,7 +43,7 @@ public class TestDropboxAuthenticationFilter {
     Mockito.when(request.getMethod()).thenReturn("GET");
     Mockito.when(request.getRequestURI())
         .thenReturn(new StringBuffer(DropboxAuthenticationFilter.WEBHDFS_ROOT + "/user/ubuntu/foo").toString());
-    Mockito.when(request.getQueryString()).thenReturn("op=OPEN ");
+    Mockito.when(request.getQueryString()).thenReturn("op=OPEN");
     Mockito.when(request.getRemoteAddr()).thenReturn("192.168.1.2");
 
     HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
@@ -156,7 +156,7 @@ public class TestDropboxAuthenticationFilter {
     Mockito.when(request.getMethod()).thenReturn("GET");
     Mockito.when(request.getRequestURI())
         .thenReturn(new StringBuffer(DropboxAuthenticationFilter.WEBHDFS_ROOT + "/user/ubuntu/").toString());
-    Mockito.when(request.getQueryString()).thenReturn("op=LISTSTATUS");
+    Mockito.when(request.getQueryString()).thenReturn("op=OPEN ");
     Mockito.when(request.getRemoteAddr()).thenReturn("192.168.1.2");
 
     HttpServletResponse response = Mockito.mock(HttpServletResponse.class);

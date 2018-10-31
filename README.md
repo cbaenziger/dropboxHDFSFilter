@@ -1,13 +1,16 @@
 # What is this?
-This Jetty filter will return a 403 if you are trying to read data out of WebHDFS while it will allow writes in.
+
+This Jetty filter allows one to run WebHDFS as a "drop-box". Being a drop-box, one can write data in following standard HDFS permissioning. However, one is prohibited from reading data out (even if allowed by HDFS permissions). Regardless of ability to read data out, one may GET the properties of a file to verify that the file was written successfully or permissioned as desired. But reading the actual data via a WebHDFS `OPEN` operation will be rejected, unless specifically allowed.
+
+Effectively, this Jetty filter will return an HTTP 403 if you are trying to read data out of WebHDFS while it will allow writes in.
 
 # How to deploy?
 
-This is a Jetty filter but we are not an authentication filter, so do not need to set `dfs.web.authentication.filter`. The current thought is to use the namenode's `web.xml` (e.g. `/usr/hdp/current/hadoop-hdfs-namenode/webapps/hdfs/WEB-INF/web.xml`) setting the following:
+This is a Jetty filter but we are not an authentication filter, so do not need to set `dfs.web.authentication.filter`. The current thought is to use the namenode and datanodes's `web.xml` (e.g. `/usr/hdp/current/hadoop-hdfs-namenode/webapps/hdfs/WEB-INF/web.xml`) setting the following:
 ```
   <filter>
     <filter-name>DropboxAuthenticationFilter</filter-name>
-    <filter-class>com.bloomberg.dropboxFilter.DropboxAuthenticationFilter</filter-class>
+    <filter-class>com.bloomberg.bach.DropboxAuthenticationFilter</filter-class>
     <init-param>
       <param-name>kerberos.keytab</param-name>
       <param-value>/etc/security/keytabs/spnego.service.keytab</param-value>
@@ -30,18 +33,19 @@ specialuser,8.0.0.0/8,/user/special/
 ```
 
 # How does one configure the access rules?
+
 The rules are passed in via filter parameters for the `dropbox.allow.rules` parameter to the filter class. Rules are allow rules; if no rule are configured no reads will be allowed. Rules are newline or `|` delimited. The rule format is `user,subnet,path`:
 * User can be the specific username or `*` for any user.
 * Subnet is a CIDR notation IP network (or `*` for any IP address); this uses the Apache Commons Net [`SubnetUtils`](https://commons.apache.org/proper/commons-net/apidocs/org/apache/commons/net/util/SubnetUtils.html) class for IP matching; at this time it is thus IPv4 limited and does not accept 0.0.0.0/0 for any address. One may use a.b.c.d/32 for a specific host.
 * Path is a directory path. Any file under that directory may be read. (To disable the filter one may provide `/` as the path to match any file.)
 
-# What should one see?
+# What should one see if rejected?
 
 Attempting any GET action from the HDFS namenode using webhdfs other than GETFILECHECKSUM will result in the following error (e.g. for the `clay` user):
 ```
 <head><title>Error 403 WebHDFS is configured write-only for clay</title></head>
 <body><h2>HTTP ERROR 403</h2>
 <p>Problem accessing /webhdfs/v1/user/clay/file. Reason:
-<pre>    WebHDFS is configured write-only for clay</pre></p>
+<pre>    WebHDFS is configured write-only for clay@128.138.192.1</pre></p>
 <hr/><i><small>Powered by Jetty://</small></i><br/>
 ```

@@ -225,9 +225,9 @@ public class DropboxAuthenticationFilter implements Filter {
     // need the authorization filter to run first so we know who's making the call
     filterChain.doFilter(request, response);
 
-    if("GET".equalsIgnoreCase(httpRequest.getMethod()) && !matchRule("*", address, uri)
-        && !matchRule(user, address, uri)
-        && !query.map((q) -> q.trim().equalsIgnoreCase("op=GETFILECHECKSUM")).orElse(false)) {
+    if("GET".equalsIgnoreCase(httpRequest.getMethod()) &&
+       query.map((q) -> q.trim().equalsIgnoreCase("op=OPEN")).orElse(true) &&
+       !(matchRule("*", address, uri) || matchRule(user, address, uri))) {
       if(!response.isCommitted()) {
         httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
             "WebHDFS is configured write-only for " + user + "@" + address);
