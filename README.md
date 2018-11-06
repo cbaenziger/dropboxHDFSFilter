@@ -6,7 +6,7 @@ Effectively, this Jetty filter will return an HTTP 403 if you are trying to read
 
 # How to deploy?
 
-This is a Jetty filter but we are not an authentication filter, so do not need to set `dfs.web.authentication.filter`. The current thought is to use the namenode and datanodes's `web.xml` (e.g. `/usr/hdp/current/hadoop-hdfs-namenode/webapps/hdfs/WEB-INF/web.xml`) setting the following:
+This is a Jetty filter but we are not an authentication filter, so one need not set `dfs.web.authentication.filter`. The current thought is to use the namenode and datanodes's `web.xml` (e.g. `/usr/hdp/current/hadoop-hdfs-namenode/webapps/hdfs/WEB-INF/web.xml`) setting the following:
 ```
   <filter>
     <filter-name>DropboxAuthenticationFilter</filter-name>
