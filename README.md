@@ -1,3 +1,6 @@
+# Committed Upstream
+Note, the work here has been superceeded by the upstream work accepted in [HDFS-14234](https://issues.apache.org/jira/browse/HDFS-14234). The code here does not secure the actual datanodes, so one may work around the Namenode-only filter by requesting a specific block from a datanode using an otherwise-requested token. Such a loop-hole has been fixed in the upstream committed work.
+
 # What is this?
 
 This Jetty filter allows one to run WebHDFS as a "drop-box". Being a drop-box, one can write data in following standard HDFS permissioning. However, one is prohibited from reading data out (even if allowed by HDFS permissions). Regardless of ability to read data out, one may GET the properties of a file to verify that the file was written successfully or permissioned as desired. But reading the actual data via a WebHDFS `OPEN` operation will be rejected, unless specifically allowed.
